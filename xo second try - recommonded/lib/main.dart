@@ -28,6 +28,7 @@ class _MainApp extends State<MainApp> {
   var p1;
   var p2;
   var activeP;
+  int l=0;
   List<GameButtons> buttonsList;
   @override
   void initState() {
@@ -39,6 +40,7 @@ class _MainApp extends State<MainApp> {
     p1 = new List();
     p2 = new List();
     activeP = 1;
+    
 
 
     var gameButtons = <GameButtons>[
@@ -56,17 +58,26 @@ class _MainApp extends State<MainApp> {
     return gameButtons;
   }
 
+  String whoPlay(){
+    if(activeP == 1){
+      return "Next Game for Player X";
+    }
+    else{
+      return "Next Game for Player O";
+    }
+  }
   void playGame(GameButtons hg){
     setState(() {
       if(activeP == 1){
         hg.letter = "X";
         activeP = 2;
         p1.add(hg.id);
+        l++;
       } else{
         hg.letter = "O";
         activeP = 1;
         p2.add(hg.id);
-        
+        l++;
       }
       hg.enabel = false;
       checkWinner();
@@ -129,6 +140,14 @@ class _MainApp extends State<MainApp> {
     if(p2.contains(3) && p2.contains(5) && p2.contains(7)){
       winner =2;
     }
+
+    if(l == 9 && winner == -1){
+        showDialog(
+          context: context , 
+          builder: (_)=> CustomDialog("Game Over",
+           "Draw press the reset button to restart the game" , resetGame)
+        );
+      }
     
 
     if(winner != -1){
@@ -136,13 +155,13 @@ class _MainApp extends State<MainApp> {
         showDialog(
           context: context , 
           builder: (_)=> CustomDialog("Game Over",
-           "Player 1 won press the reset button to restart the game" , resetGame)
+           "Player X won press the reset button to restart the game" , resetGame)
         );
       }if(winner == 2){
         showDialog(
           context: context , 
           builder: (_)=> CustomDialog("Game Over",
-           "Player 2 won press the reset button to restart the game" , resetGame)
+           "Player O won press the reset button to restart the game" , resetGame)
         );
       }
     }
@@ -150,6 +169,7 @@ class _MainApp extends State<MainApp> {
   }
 
   void resetGame(){
+    l=0;
     if(Navigator.canPop(context)) Navigator.pop(context);
     setState(() {
       buttonsList= doInit(); 
@@ -160,7 +180,7 @@ class _MainApp extends State<MainApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-      title: Center(child: Text( "X O GAME"
+      title: Center(child: Text( whoPlay()
         ),),
       ),
         body:Container(
@@ -201,9 +221,20 @@ class _MainApp extends State<MainApp> {
 
         )
         ),
-    );
-  }
 
- }
+        floatingActionButton: FloatingActionButton(
+		    onPressed: () {
+          resetGame();
+		    },
+
+		    tooltip: 'reset',
+
+		    child: Icon(Icons.settings_backup_restore),
+        backgroundColor: Theme.of(context).primaryColor,
+
+	    ),
+    );
+}
+}
 
 
